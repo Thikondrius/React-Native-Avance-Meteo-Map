@@ -8,35 +8,29 @@ import {
 import { kelvinToCelcius } from "../services/temperature";
 import { LineChart } from "react-native-chart-kit";
 import { withNavigation } from "react-navigation";
-import { API_KEY } from "../constant";
-const FORECAST_URL =
-  "http://api.openweathermap.org/data/2.5/forecast?appid=" + API_KEY;
-import axios from "axios";
+import { connect } from "react-redux";
 import fakeForeCastData from "../fakeForeCastData";
+import { getWeatherForecastByCity } from "../actions";
 
 class AdvancedDetails extends Component {
   state = { data: undefined };
 
   componentDidMount() {
     const city = this.props.navigation.getParam("city");
-    axios.get(`${FORECAST_URL}&q=${city}`).then(response => {
-      this.setState({ data: response.data });
-    });
-
-    // this.setState({ data: fakeForeCastData });
+    this.props.getWeatherForecastByCity(city);
   }
   getTemperatures() {
-    return this.state.data.list.map(weather => {
+    return this.props.weatherForecast.list.map(weather => {
       return kelvinToCelcius(weather.main.temp);
     });
   }
   getHumidity() {
-    return this.state.data.list.map(weather => {
+    return this.props.weatherForecast.list.map(weather => {
       return weather.main.humidity;
     });
   }
   getLabel() {
-    return this.state.data.list.map((_, index) => {
+    return this.props.weatherForecast.list.map((_, index) => {
       let day = index / 8;
       return index === 0 ? "t" : index % 8 === 0 ? "t+" + day + "j" : "";
     });
@@ -86,7 +80,7 @@ class AdvancedDetails extends Component {
         }}
       >
         <Text style={{ fontSize: 30, paddingTop: hp("1%") }}>
-          {this.state.data.city.name} 5 days forecast
+          {this.props.weatherForecast.city.name} 5 days forecast
         </Text>
         <Text style={{ marginBottom: hp("2%"), fontSize: 20 }}>
           Temperature (C°)
@@ -121,12 +115,21 @@ class AdvancedDetails extends Component {
         }}
       >
 
-        {this.state.data != undefined
+        {this.props.weatherForecast != undefined
           ? this.renderContent()
           : <Text>Loading ...</Text>}
       </View>
     );
   }
 }
-
-export default withNavigation(AdvancedDetails);
+const mapStateToProps = ({ weather }) => {
+  return {
+    weatherForecast: weather.weatherForecast
+  };
+};
+const mapDispatchToProps = {
+  getWeatherForecastByCity
+};
+export default withNavigation(
+  connect(mapStateToProps, mapDispatchToProps)(AdvancedDetails)
+);

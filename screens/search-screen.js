@@ -6,18 +6,12 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp
 } from "react-native-responsive-screen";
-import axios from "axios";
 import WeatherCard from "../components/weather-card";
-const WEATHER_BASE_URL = "http://api.openweathermap.org/data/2.5/weather";
-import fakeCurrData from "../fakeCurrentWeatherData";
-import { API_KEY } from "../constant";
-
-export default class Index extends React.Component {
+import { connect } from "react-redux";
+import { getCurrentWeatherByCity } from "../actions/index";
+class SearchScreen extends React.Component {
   state = {
-    lat: 48.859268,
-    lng: 2.347060,
-    search: "",
-    currentWeather: undefined
+    search: ""
   };
 
   updateSearch = search => {
@@ -33,16 +27,7 @@ export default class Index extends React.Component {
   }
 
   submitSearch = () => {
-    axios
-      .get(`${WEATHER_BASE_URL}?q=${this.state.search}&appid=${API_KEY}`)
-      .then(response => {
-        this.setState({
-          currentWeather: response.data,
-          lat: response.data.coord.lat,
-          lng: response.data.coord.lon
-        });
-      });
-
+    this.props.getCurrentWeatherByCity(this.state.search);
     /*this.setState({
       currentWeather: fakeCurrData,
       lat: fakeCurrData.coord.lat,
@@ -57,16 +42,20 @@ export default class Index extends React.Component {
         <MapView
           style={{ flex: 1, alignItems: "center", zIndex: 0 }}
           region={{
-            latitude: this.state.lat,
-            longitude: this.state.lng,
+            latitude: this.props.currentWeather
+              ? this.props.currentWeather.coord.lat
+              : 48.859268,
+            longitude: this.props.currentWeather
+              ? this.props.currentWeather.coord.lon
+              : 2.347060,
             latitudeDelta: 0.2000,
             longitudeDelta: 0.1000
           }}
           liteMode={true}
           scrollEnabled={false}
         />
-        {this.state.currentWeather &&
-          <WeatherCard weather={this.state.currentWeather} />}
+        {this.props.currentWeather &&
+          <WeatherCard weather={this.props.currentWeather} />}
         {
           <SearchBar
             lightTheme
@@ -86,3 +75,14 @@ export default class Index extends React.Component {
     );
   }
 }
+const mapStateToProps = ({ weather }) => {
+  return {
+    currentWeather: weather.currentWeather
+  };
+};
+
+const mapDispatchToProps = {
+  getCurrentWeatherByCity
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SearchScreen);
