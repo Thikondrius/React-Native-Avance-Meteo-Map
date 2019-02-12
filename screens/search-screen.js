@@ -9,6 +9,11 @@ import {
 import WeatherCard from "../components/weather-card";
 import { connect } from "react-redux";
 import { getCurrentWeatherByCity } from "../actions/index";
+
+const DEFAULT_COORD = {
+  lat: 48.859268,
+  lng: 2.347060
+};
 class SearchScreen extends React.Component {
   state = {
     search: ""
@@ -44,10 +49,10 @@ class SearchScreen extends React.Component {
           region={{
             latitude: this.props.currentWeather
               ? this.props.currentWeather.coord.lat
-              : 48.859268,
+              : DEFAULT_COORD.lat,
             longitude: this.props.currentWeather
               ? this.props.currentWeather.coord.lon
-              : 2.347060,
+              : DEFAULT_COORD.lng,
             latitudeDelta: 0.2000,
             longitudeDelta: 0.1000
           }}

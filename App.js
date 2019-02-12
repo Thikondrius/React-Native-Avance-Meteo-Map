@@ -4,7 +4,7 @@ import { createStackNavigator, createAppContainer } from "react-navigation";
 import store from "./store";
 import { Provider } from "react-redux";
 import SearchScreen from "./screens/search-screen";
-
+import IndexScreen from "./screens/index-screen";
 export default class App extends React.Component {
   render() {
     return (
@@ -17,7 +17,8 @@ export default class App extends React.Component {
 
 const AppNavigator = createStackNavigator(
   {
-    Index: SearchScreen,
+    Index: IndexScreen,
+    Search: SearchScreen,
     Detail: AdvancedDetailsScreen
   },
   {

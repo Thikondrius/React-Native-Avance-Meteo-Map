@@ -33,7 +33,6 @@ class WeatherCard extends Component {
       onStartShouldSetPanResponder: () => true,
       onPanResponderMove: (e, gesture) => {
         if (!(this.state.isCardOpen && gesture.y0 > TOP_DRAG_ZONE_MAX)) {
-          console.log("set");
           // Si la carte est ouverte il faut absoluement avoir
           // commencé à la tirer depuis le haut pour ne pas qu'il y ai de téléportation
           this.position.setValue({
